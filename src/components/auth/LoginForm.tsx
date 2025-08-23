@@ -1,16 +1,11 @@
 "use client"
 import { authClient } from '@/app/lib/auth-client'
-import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import React, { useTransition } from 'react'
 import { toast } from 'sonner'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Loader, PartyPopperIcon } from 'lucide-react'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import Image from 'next/image'
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     const router = useRouter()
@@ -35,7 +30,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     }
     return (
         <Dialog>
-            <DialogTrigger>
+            <DialogTrigger asChild>
                 <Button>
                     Login
                 </Button>

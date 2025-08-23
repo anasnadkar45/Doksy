@@ -3,10 +3,19 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ExternalLink, Edit, Eye, Loader, BookOpen, Globe, Trash } from "lucide-react"
+import { Loader, BookOpen, Trash } from "lucide-react"
 import Link from "next/link"
 import PublishDialog from "./publish-dialog"
 import { toast } from "sonner"
+import Github from "../../../public/Icons/Github"
+import Eye from "../../../public/Icons/Eye"
+import RulerPen from "../../../public/Icons/RulerPen"
+import CloudUpload from "../../../public/Icons/Publish"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import Menu from "../../../public/Icons/Menu"
+import GlobePointer from "../../../public/Icons/Globe"
+import Edit from "../../../public/Icons/Edit"
+import Delete from "../../../public/Icons/Delete"
 
 interface Project {
   id: string
@@ -101,7 +110,7 @@ export default function ProjectList() {
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
-          <Card key={project.id} className="hover:shadow-md transition-shadow">
+          <Card key={project.id} className="hover:shadow-md hover:bg-card/50 transition-all duration-300">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
@@ -110,39 +119,50 @@ export default function ProjectList() {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{project.description}</p>
                   )}
                 </div>
-                <Badge variant={project.isPublished ? "default" : "secondary"}>
-                  {project.isPublished ? "Published" : "Draft"}
-                </Badge>
+                <div className="flex gap-2 items-center">
+                  <Badge variant={project.isPublished ? "default" : "secondary"}>
+                    {project.isPublished ? "Published" : "Draft"}
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="hover:cursor-pointer">
+                      <Menu />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" sideOffset={10}>
+                      <DropdownMenuItem>
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                          <Github className="size-4" /> Profile
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/docs/${project.slug}`} target="_blank" className="flex items-center gap-2">
+                          <GlobePointer /> Preview
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setPublishingProject(project)}><CloudUpload /> Publish</DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/projects/${project.slug}/edit`} className="flex items-center gap-2">
+                          <Edit /> Edit
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeleteProject(project.id)} disabled={loading}>
+                        {!isDeleting ? (
+                          <div className="flex items-center gap-2">
+                            <Delete /> Delete
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Loader className="animate-spin" />
+                          </div>
+                        )}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">Updated {new Date(project.updatedAt).toLocaleDateString()}</div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </Button>
-                  {project.isPublished && (
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/docs/${project.slug}`} target="_blank">
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  )}
-                  <Button variant="ghost" size="sm" onClick={() => setPublishingProject(project)}>
-                    <Globe className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/projects/${project.slug}/edit`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant={"destructive"} onClick={() => handleDeleteProject(project.id)} disabled={loading}>
-                    {!isDeleting ? <Trash /> : <Loader className="animate-spin"/>}
-                  </Button>
-                </div>
               </div>
             </CardContent>
           </Card>

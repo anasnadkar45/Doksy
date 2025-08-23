@@ -4,6 +4,7 @@ import { BookOpen, LogOut } from 'lucide-react'
 import React from 'react'
 import { Button } from './ui/button'
 import { useRouter } from 'next/navigation'
+import { ModeToggle } from './ModeToggle'
 
 const Header = () => {
     const {
@@ -38,12 +39,12 @@ const Header = () => {
                             )}
                             <span className="text-sm text-muted-foreground">{session?.user.name || session?.user.email}</span>
                         </div>
+                        <ModeToggle />
                         <Button variant="ghost" size="sm" onClick={handleSignOut}>
                             <LogOut className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
-                
             </div>
         </header>
     )
