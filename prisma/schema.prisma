@@ -22,8 +22,17 @@ model User {
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
+
+  // GitHub integration
+  githubId       String? @unique
+  githubUsername String?
+  accessToken    String? // GitHub access token for API calls
+
   sessions      Session[]
   accounts      Account[]
+
+  // Relations
+  projects Project[]
 
   @@map("user")
 }
@@ -70,4 +79,54 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String   @unique // URL-friendly identifier
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // GitHub repository info
+  githubRepoId   String
+  githubRepoName String
+  githubOwner    String
+  githubUrl      String
+
+  // Documentation settings
+  isPublished Boolean @default(false)
+  customDomain String?
+  
+  // User relation
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  pages Page[]
+
+  @@map("projects")
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   // URL path segment
+  content   String   @db.Text // Rich text content from TipTap
+  order     Int      @default(0) // For sidebar ordering
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Project relation
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Self-referencing for nested pages (optional for future)
+  parentId String?
+  parent   Page?   @relation("PageHierarchy", fields: [parentId], references: [id])
+  children Page[]  @relation("PageHierarchy")
+
+  @@unique([projectId, slug])
+  @@map("pages")
 }

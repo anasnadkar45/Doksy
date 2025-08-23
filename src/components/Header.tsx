@@ -1,0 +1,52 @@
+"use client"
+import { authClient } from '@/app/lib/auth-client'
+import { BookOpen, LogOut } from 'lucide-react'
+import React from 'react'
+import { Button } from './ui/button'
+import { useRouter } from 'next/navigation'
+
+const Header = () => {
+    const {
+        data: session,
+        isPending, //loading state
+        error, //error object
+        refetch //refetch the session
+    } = authClient.useSession()
+
+    const router = useRouter()
+
+    const handleSignOut = async () => {
+        await authClient.signOut()
+        router.push("/")
+    }
+    return (
+        <header className="bg-card">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-16">
+                    <div className="flex items-center">
+                        <BookOpen className="h-8 w-8" />
+                        <h1 className="ml-2 text-xl font-bold">Doksy</h1>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            {session?.user.image && (
+                                <img
+                                    src={session.user.image || "/placeholder.svg"}
+                                    alt={session.user.name || "User"}
+                                    className="w-8 h-8 rounded-full"
+                                />
+                            )}
+                            <span className="text-sm text-muted-foreground">{session?.user.name || session?.user.email}</span>
+                        </div>
+                        <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                            <LogOut className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+                
+            </div>
+        </header>
+    )
+}
+
+export default Header
