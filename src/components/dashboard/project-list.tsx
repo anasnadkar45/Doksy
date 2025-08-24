@@ -96,7 +96,7 @@ export default function ProjectList() {
     return (
       <Card>
         <CardContent className="text-center py-12">
-          <div className="text-gray-500 dark:text-gray-400">
+          <div className="text-muted-foreground">
             <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <h3 className="text-lg font-medium mb-2">No projects yet</h3>
             <p>Create your first documentation project from a GitHub repository.</p>
@@ -116,7 +116,7 @@ export default function ProjectList() {
                 <div>
                   <CardTitle className="text-lg">{project.name}</CardTitle>
                   {project.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{project.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
                   )}
                 </div>
                 <div className="flex gap-2 items-center">
@@ -162,7 +162,7 @@ export default function ProjectList() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">Updated {new Date(project.updatedAt).toLocaleDateString()}</div>
+                <div className="text-xs text-muted-foreground">Updated {new Date(project.updatedAt).toLocaleDateString()}</div>
               </div>
             </CardContent>
           </Card>

@@ -49,7 +49,7 @@
   --shadow-xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.38);
   --tracking-normal: 0em;
-  --spacing: 0.25rem;
+  --spacing: 0.21rem;
 }
 
 .dark {
@@ -67,7 +67,7 @@
   --muted-foreground: oklch(0.5999 0 0);
   --accent: oklch(0.3715 0 0);
   --accent-foreground: oklch(0.8853 0 0);
-  --destructive: oklch(65.357% 0.23246 26.532);
+  --destructive: oklch(0.6591 0.1530 22.1703);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.3290 0 0);
   --input: oklch(0.3092 0 0);
@@ -162,7 +162,17 @@
   }
 }
 
-:root{
-  scrollbar-color: #00000000;
-  scrollbar-width: 0px;
+::selection {
+  background-color: #4f4f4f;
+  color: #ffffff;
+}
+
+/* Added scrollbar hiding styles for main content */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* WebKit */
 }

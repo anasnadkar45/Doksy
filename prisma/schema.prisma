@@ -15,9 +15,9 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String   @id
   name          String
-  email         String    @unique
+  email         String   @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
@@ -28,8 +28,8 @@ model User {
   githubUsername String?
   accessToken    String? // GitHub access token for API calls
 
-  sessions      Session[]
-  accounts      Account[]
+  sessions Session[]
+  accounts Account[]
 
   // Relations
   projects Project[]
@@ -85,6 +85,8 @@ model Project {
   id          String   @id @default(cuid())
   name        String
   description String?
+  liveUrl     String?
+  creator     String?
   slug        String   @unique // URL-friendly identifier
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -96,9 +98,9 @@ model Project {
   githubUrl      String
 
   // Documentation settings
-  isPublished Boolean @default(false)
+  isPublished  Boolean @default(false)
   customDomain String?
-  
+
   // User relation
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -112,7 +114,7 @@ model Project {
 model Page {
   id        String   @id @default(cuid())
   title     String
-  slug      String   // URL path segment
+  slug      String // URL path segment
   content   String   @db.Text // Rich text content from TipTap
   order     Int      @default(0) // For sidebar ordering
   createdAt DateTime @default(now())

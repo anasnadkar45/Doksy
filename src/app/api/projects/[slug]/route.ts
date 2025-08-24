@@ -48,11 +48,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
     }
 
     const body = await request.json()
-    const {projectId} = body;
+    const { projectId } = body;
 
     const project = await prisma.project.findFirst({
-      where:{
-        id:projectId
+      where: {
+        id: projectId
       }
     })
 
@@ -61,16 +61,16 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
     }
 
     const deletedProject = await prisma.project.delete({
-      where:{
-        id:projectId
+      where: {
+        id: projectId
       }
     });
 
     revalidatePath('/dashboard')
 
-    return NextResponse.json({success:true})    
+    return NextResponse.json({ success: true })
   } catch (error) {
-    
+
   }
 }
 
@@ -85,7 +85,7 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
     }
 
     const body = await request.json()
-    const { name, description, isPublished } = body
+    const { name, description, liveUrl, creator, isPublished } = body
 
     const project = await prisma.project.findFirst({
       where: {
@@ -103,6 +103,8 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
       data: {
         name,
         description,
+        liveUrl,
+        creator,
         isPublished,
       },
     })

@@ -100,8 +100,8 @@ export default function SidebarEditor({
             currentPage?.id === page.id ? "bg-muted border-primary" : "border-transparent"
           }`}
         >
-          <GripVertical className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <FileText className="h-4 w-4 text-gray-500 flex-shrink-0" />
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
 
           <div className="flex-1 min-w-0" onClick={() => onPageSelect(page)}>
             {editingPage === page.id ? (
@@ -117,7 +117,7 @@ export default function SidebarEditor({
                 autoFocus
               />
             ) : (
-              <span className="text-sm font-medium text-gray-900 dark:text-white truncate line-clamp-1">{page.title}</span>
+              <span className="text-sm font-medium truncate line-clamp-1">{page.title}</span>
             )}
           </div>
 

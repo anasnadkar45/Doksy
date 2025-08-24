@@ -5,6 +5,7 @@ import React from 'react'
 import { Button } from './ui/button'
 import { useRouter } from 'next/navigation'
 import { ModeToggle } from './ModeToggle'
+import Image from 'next/image'
 
 const Header = () => {
     const {
@@ -25,7 +26,7 @@ const Header = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center">
-                        <BookOpen className="h-8 w-8" />
+                        <Image src={'/Logo.svg'} alt='Doksy' width={40} height={40}/>
                         <h1 className="ml-2 text-xl font-bold">Doksy</h1>
                     </div>
                     <div className="flex items-center gap-4">

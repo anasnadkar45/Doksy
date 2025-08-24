@@ -26,20 +26,20 @@ export default function DashboardContent({ user }: DashboardContentProps) {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4">
           <Input className="w-full" />
           <Button onClick={() => setShowRepoSelector(true)} className="flex items-center gap-2">
             <Plus />
             Create New Project
           </Button>
-        </div>
+        </div> */}
 
         {/* Stats */}
         <DashboardStats />
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Your Projects</h3>
+            <h3 className="text-xl font-semibold">Your Projects</h3>
             <Button onClick={() => setShowRepoSelector(true)} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Create New Project

@@ -24,6 +24,8 @@ export interface Project {
   id: string
   name: string
   description: string | null
+  liveUrl: string | null
+  creator: string | null
   slug: string
   isPublished: boolean
   githubUrl: string
@@ -197,7 +199,7 @@ export default function ProjectEditor({ project: initialProject }: ProjectEditor
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Settings project={project} setProject={setProject}/>
+              <Settings project={project} setProject={setProject} />
               {project.isPublished && (
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/docs/${project.slug}`} target="_blank">

@@ -113,7 +113,7 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
   console.log(repos)
 
   return (
-    <div className="fixed inset-0 bg-[#000000a3] bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-background/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-4xl backdrop-blur-lg bg-opacity-50 h-fit overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Select a Repository</CardTitle>

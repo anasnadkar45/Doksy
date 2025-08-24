@@ -9,7 +9,7 @@ import { Project } from './project-editor'
 
 const Settings = ({ project, setProject }: {
     project: Project,
-    setProject:any
+    setProject: any
 }) => {
     return (
         <Dialog>
@@ -34,6 +34,14 @@ const Settings = ({ project, setProject }: {
                             onChange={(e) => setProject({ ...project, description: e.target.value })}
                             placeholder="Project description..."
                         />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium">Live Url</label>
+                        <Input value={project.liveUrl || ""} onChange={(e) => setProject({ ...project, liveUrl: e.target.value })} />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium">Creator Social</label>
+                        <Input value={project.creator || ""} onChange={(e) => setProject({ ...project, creator: e.target.value })} />
                     </div>
                     <Button
                         size="sm"
