@@ -4,7 +4,7 @@ import { prisma } from "@/app/lib/db"
 
 interface PageProps {
   params: Promise<{ slug: string }>
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }
 
 export default async function DocumentationPage({ params, searchParams }: PageProps) {
@@ -32,7 +32,7 @@ export default async function DocumentationPage({ params, searchParams }: PagePr
   }
 
   // Get current page
-  const currentPageSlug = searchParams.page || project.pages[0]?.slug
+  const currentPageSlug = (await searchParams).page || project.pages[0]?.slug
   const currentPage = project.pages.find((page) => page.slug === currentPageSlug) || project.pages[0]
 
   if (!currentPage) {
@@ -42,10 +42,10 @@ export default async function DocumentationPage({ params, searchParams }: PagePr
   return <DocumentationViewer project={project} currentPage={currentPage} />
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const project = await prisma.project.findFirst({
     where: {
-      slug: params.slug,
+      slug: (await params).slug,
       isPublished: true,
     },
   })
