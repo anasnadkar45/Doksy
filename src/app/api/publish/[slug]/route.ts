@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
 
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         userId: session.user.id,
       },
       include: {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -65,7 +65,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
 
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         userId: session.user.id,
       },
     })

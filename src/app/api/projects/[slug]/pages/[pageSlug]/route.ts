@@ -3,7 +3,7 @@ import { prisma } from "@/app/lib/db";
 import { headers } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string; pageSlug: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string; pageSlug: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         userId: session.user.id,
       },
     })
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     const page = await prisma.page.findFirst({
       where: {
-        slug: params.pageSlug,
+        slug: (await params).pageSlug,
         projectId: project.id,
       },
     })
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { slug: string; pageSlug: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string; pageSlug: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
 
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         userId: session.user.id,
       },
     })
@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
 
     const page = await prisma.page.findFirst({
       where: {
-        slug: params.pageSlug,
+        slug: (await params).pageSlug,
         projectId: project.id,
       },
     })
@@ -92,7 +92,7 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { slug: string; pageSlug: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string; pageSlug: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -104,7 +104,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
 
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         userId: session.user.id,
       },
     })
@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
 
     const page = await prisma.page.findFirst({
       where: {
-        slug: params.pageSlug,
+        slug: (await params).pageSlug,
         projectId: project.id,
       },
     })

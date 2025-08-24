@@ -1,11 +1,11 @@
 import { prisma } from "@/app/lib/db"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const project = await prisma.project.findFirst({
       where: {
-        slug: params.slug,
+        slug: (await params).slug,
         isPublished: true,
       },
       include: {
