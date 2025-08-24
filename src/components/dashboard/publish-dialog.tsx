@@ -16,6 +16,8 @@ interface Project {
   slug: string
   isPublished: boolean
   githubUrl: string
+  createdAt: string
+  updatedAt: string
 }
 
 interface PublishDialogProps {
