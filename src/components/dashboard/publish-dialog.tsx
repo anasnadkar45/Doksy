@@ -81,7 +81,7 @@ export default function PublishDialog({ project, onClose, onUpdate }: PublishDia
 
   return (
     <div className="fixed inset-0 bg-background/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl h-[90vh] backdrop-blur-2xl bg-opacity-50 py-0">
+      <Card className="w-full max-w-2xl h-fit max-h-[90vh] backdrop-blur-2xl bg-opacity-50 py-0">
         <ScrollArea className="h-full w-full">
           <CardHeader className="flex flex-row items-center justify-between p-6">
             <CardTitle className="flex items-center gap-2">

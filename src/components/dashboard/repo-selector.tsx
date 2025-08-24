@@ -7,6 +7,12 @@ import { Badge } from "@/components/ui/badge"
 import { X, Search, Star, ExternalLink, Loader } from "lucide-react"
 import type { GitHubRepo } from "@/app/lib/github"
 import { toast } from "sonner"
+import { ScrollArea } from "../ui/scroll-area"
+import WindowPointer from "../../../public/Icons/WindowPointer"
+import Menu2 from "../../../public/Icons/Menu2"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import Lock from "../../../public/Icons/Lock"
+import UnLock from "../../../public/Icons/UnLock"
 
 interface RepoSelectorProps {
   onClose: () => void
@@ -16,26 +22,15 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [filteredRepos, setFilteredRepos] = useState<GitHubRepo[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null)
-  const [creating, setCreating] = useState(false)
+  const [creating, setCreating] = useState(false);
+  const [selected, setSelected] = useState<"private" | "public" | null>(null)
 
   useEffect(() => {
     fetchRepos()
   }, [])
-
-  useEffect(() => {
-    if (searchQuery) {
-      const filtered = repos.filter(
-        (repo) =>
-          repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          repo.description?.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-      setFilteredRepos(filtered)
-    } else {
-      setFilteredRepos(repos)
-    }
-  }, [searchQuery, repos])
 
   const fetchRepos = async () => {
     try {
@@ -86,6 +81,35 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
     }
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput)
+    }, 400);
+
+    return () => clearTimeout(timer)
+  }, [searchInput])
+  useEffect(() => {
+    let filtered = repos
+
+    // filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (repo) =>
+          repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          repo.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // filter by visibility
+    if (selected) {
+      filtered = filtered.filter((repo) =>
+        selected === "private" ? repo.private : !repo.private
+      )
+    }
+
+    setFilteredRepos(filtered)
+  }, [selected, searchQuery, repos])
+
   console.log(repos)
 
   return (
@@ -97,22 +121,44 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent >
           {/* Search */}
-          <div className="p-6 border-b">
-            <div className="relative">
+          <div className="flex items-center gap-4 pb-6 border-b">
+            {/* filter */}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="hover:cursor-pointer">
+                <Button variant={"secondary"}>
+                  <Menu2 />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" sideOffset={10}>
+                <DropdownMenuItem onClick={() => setSelected("private")}>
+                  <Lock /> Private
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelected("public")}>
+                  <UnLock /> Public
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {selected && (
+              <Button variant={"destructive"} className="hover:cursor-pointer">
+                <X /> Clear
+              </Button>
+            )}
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search repositories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
           </div>
 
           {/* Repository List */}
-          <div className="max-h-96 overflow-y-auto">
+          <ScrollArea className="h-96">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader className="h-6 w-6 animate-spin" />
@@ -129,9 +175,8 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                 {filteredRepos.map((repo) => (
                   <div
                     key={repo.id}
-                    className={`p-4 hover:bg-secondary/30 cursor-pointer transition-colors ${
-                      selectedRepo?.id === repo.id ? "bg-sidebar border-l-4" : ""
-                    }`}
+                    className={`p-4 hover:bg-secondary/30 cursor-pointer transition-colors ${selectedRepo?.id === repo.id ? "bg-sidebar border-l-4" : ""
+                      }`}
                     onClick={() => setSelectedRepo(repo)}
                   >
                     <div className="flex items-start justify-between">
@@ -158,7 +203,7 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                       </div>
                       <Button variant="ghost" size="sm" asChild>
                         <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
+                          <WindowPointer />
                         </a>
                       </Button>
                     </div>
@@ -166,10 +211,10 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                 ))}
               </div>
             )}
-          </div>
+          </ScrollArea>
 
           {/* Footer */}
-          <div className="p-6 border-t bg-sidebar">
+          <div className="p-6 border-t bg-sidebar rounded-b-lg">
             <div className="flex justify-between items-center">
               <div className="text-sm text-muted-foreground">
                 {selectedRepo ? `Selected: ${selectedRepo.name}` : "Select a repository to continue"}

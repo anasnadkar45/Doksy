@@ -1,11 +1,11 @@
 "use client"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus, BookOpen, LogOut } from "lucide-react"
 import RepoSelector from "./repo-selector"
 import ProjectList from "./project-list"
 import DashboardStats from "./dashboard-stats"
 import { Input } from "../ui/input"
+import Plus from "../../../public/Icons/Plus"
 
 interface User {
   id: string
@@ -29,7 +29,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
         <div className="flex gap-4">
           <Input className="w-full" />
           <Button onClick={() => setShowRepoSelector(true)} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+            <Plus />
             Create New Project
           </Button>
         </div>

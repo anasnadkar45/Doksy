@@ -6,6 +6,7 @@ import CloudUpload from "../../../public/Icons/Publish"
 import BookOpen from "../../../public/Icons/Book"
 import File from "../../../public/Icons/Page"
 import AppStack from "../../../public/Icons/Draft"
+import { Skeleton } from "../ui/skeleton"
 
 interface Stats {
   totalProjects: number
@@ -48,17 +49,9 @@ export default function DashboardStats() {
 
   if (loading || !stats) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i}>
-            <CardContent className="p-6">
-              <div className="animate-pulse">
-                <div className="h-4 bg-card rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-card rounded w-1/2"></div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-6">
+        <Skeleton className="w-full h-[150px]"/>
+        <Skeleton className="w-full h-[200px]"/>
       </div>
     )
   }

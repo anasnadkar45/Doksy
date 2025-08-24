@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import DynamicTiptapEditor from "./dynamic-tiptap-editor"
 import SidebarEditor from "./sidebar-editor"
-import { Save, Eye, Settings, Plus, ArrowLeft, Globe, FileText, Loader } from "lucide-react"
+import { Save, Eye, Plus, ArrowLeft, Globe, FileText, Loader } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import Settings from "./settings"
 
 interface Page {
   id: string
@@ -19,7 +20,7 @@ interface Page {
   order: number
 }
 
-interface Project {
+export interface Project {
   id: string
   name: string
   description: string | null
@@ -180,7 +181,7 @@ export default function ProjectEditor({ project: initialProject }: ProjectEditor
                   Back to Dashboard
                 </Link>
               </Button>
-              <div>
+              <div className="flex items-center gap-4">
                 <h1 className="text-xl font-bold ">{project.name}</h1>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant={project.isPublished ? "default" : "secondary"}>
@@ -196,9 +197,7 @@ export default function ProjectEditor({ project: initialProject }: ProjectEditor
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowSettings(!showSettings)}>
-                <Settings className="h-4 w-4" />
-              </Button>
+              <Settings project={project} setProject={setProject}/>
               {project.isPublished && (
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/docs/${project.slug}`} target="_blank">
@@ -239,44 +238,6 @@ export default function ProjectEditor({ project: initialProject }: ProjectEditor
                 />
               </CardContent>
             </Card>
-
-            {/* Project Settings */}
-            {showSettings && (
-              <Card className="mt-4">
-                <CardHeader>
-                  <CardTitle className="text-lg">Project Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Project Name</label>
-                    <Input value={project.name} onChange={(e) => setProject({ ...project, name: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Description</label>
-                    <Input
-                      value={project.description || ""}
-                      onChange={(e) => setProject({ ...project, description: e.target.value })}
-                      placeholder="Project description..."
-                    />
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      // Save project settings
-                      fetch(`/api/projects/${project.slug}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(project),
-                      })
-                      toast.success("Settings saved")
-                    }}
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Settings
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Main Editor */}
