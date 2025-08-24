@@ -6,6 +6,9 @@ import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { Loader, PartyPopperIcon } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import Image from 'next/image'
+import { Changa_One } from 'next/font/google'
+const changa = Changa_One({ weight: "400", subsets: ["latin"] });
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     const router = useRouter()
@@ -15,7 +18,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
         startTransition(async () => {
             await authClient.signIn.social({
                 provider: "github",
-                callbackURL: "/",
+                callbackURL: "/dashboard",
                 fetchOptions: {
                     onSuccess: () => {
                         toast.success("Signed in with Google, you will be redirected...")
@@ -31,21 +34,19 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>
+                <Button className='bg-[#242424] hover:bg-[#2e2e2e] hover:cursor-pointer'>
                     Login
                 </Button>
             </DialogTrigger>
-            <DialogContent className='bg-opacity/70 backdrop-blur-2xl flex flex-col justify-center items-center'>
-                <div className='p-4 bg-foreground rounded-md'>
-                    <PartyPopperIcon className='text-background'/>
-                </div>
-                <DialogHeader>
-                    <DialogTitle>Welcome To Doksy</DialogTitle>
-                    <DialogDescription>
+            <DialogContent className='flex flex-col justify-center items-center'>
+                    <Image src={'/Logo.svg'} alt='Doksy' width={100} height={40} />
+                <DialogHeader >
+                    <DialogTitle className={`${changa.className} text-3xl font-extrabold text-center`}>Welcome To Doksy</DialogTitle>
+                    <DialogDescription className='text-center'>
                         Login with your github account to connect with your github repo
                     </DialogDescription>
                 </DialogHeader>
-                < Button variant="default" onClick={signInWithGithub} disabled={isPending} className="w-full" >
+                < Button variant="default" onClick={signInWithGithub} disabled={isPending} className="w-full bg-[#242424] hover:bg-[#2e2e2e] hover:cursor-pointer'" >
                     {
                         isPending ? (
                             <>

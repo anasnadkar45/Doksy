@@ -59,5 +59,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${project.name} - Documentation`,
     description: project.description || `Documentation for ${project.name}`,
+    icons: {
+      icon: "/Logo.svg",
+      shortcut: "/Logo.svg",
+      apple: "/Logo.svg",
+    },
+    openGraph: {
+      title: "Doksy | Turn Your README into Beautiful Documentation",
+      description:
+        "Convert your GitHub README into a stunning multi-page documentation site. Fast, minimal, and developer-friendly.",
+      url: "https://doksy.site",
+      siteName: "Doksy",
+      images: [
+        {
+          url: "https://doksy.site/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Doksy Documentation Preview",
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Doksy | Turn Your README into Beautiful Documentation",
+      description:
+        "Doksy converts your GitHub README into a clean, professional documentation site in seconds.",
+      images: ["https://doksy.site/og-image.png"],
+      site: "@NadkarAnas45",
+    },
   }
 }
