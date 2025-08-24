@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 import ProjectEditor from "@/components/editor/project-editor"
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export default async function EditProjectPage({ params }: PageProps) {
@@ -18,7 +18,7 @@ export default async function EditProjectPage({ params }: PageProps) {
   }
 
   // Fetch project data
-  const response = await fetch(`${process.env.BETTER_AUTH_URL}/api/projects/${params.slug}`, {
+  const response = await fetch(`${process.env.BETTER_AUTH_URL}/api/projects/${(await params).slug}`, {
     headers: {
       Cookie: (await headers()).get("cookie") || "",
     },

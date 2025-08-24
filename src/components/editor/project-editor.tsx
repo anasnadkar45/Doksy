@@ -42,8 +42,6 @@ export default function ProjectEditor({ project: initialProject }: ProjectEditor
   const [currentPage, setCurrentPage] = useState<Page | null>(pages[0] || null)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const router = useRouter()
 
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastSavedContentRef = useRef<string>("")

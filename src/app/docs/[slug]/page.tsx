@@ -3,7 +3,7 @@ import DocumentationViewer from "@/components/docs/documentation-viewer"
 import { prisma } from "@/app/lib/db"
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
   searchParams: { page?: string }
 }
 
@@ -11,7 +11,7 @@ export default async function DocumentationPage({ params, searchParams }: PagePr
   // Fetch published project
   const project = await prisma.project.findFirst({
     where: {
-      slug: params.slug,
+      slug: (await params).slug,
       isPublished: true,
     },
     include: {
