@@ -10,7 +10,7 @@ import Image from 'next/image'
 import { Changa_One } from 'next/font/google'
 const changa = Changa_One({ weight: "400", subsets: ["latin"] });
 
-const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
+const LoginForm = ({ className, text }: { className?: string, text: string }) => {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
 
@@ -34,19 +34,19 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className='bg-[#242424] hover:bg-[#2e2e2e] hover:cursor-pointer'>
-                    Login
+                <Button className={`${className}hover:cursor-pointer`}>
+                    {text}
                 </Button>
             </DialogTrigger>
-            <DialogContent className='flex flex-col justify-center items-center'>
-                    <Image src={'/Logo.svg'} alt='Doksy' width={100} height={40} />
+            <DialogContent className='flex flex-col justify-center items-center bg-white border-white'>
+                <Image src={'/Logo.svg'} alt='Doksy' width={100} height={40} />
                 <DialogHeader >
-                    <DialogTitle className={`${changa.className} text-3xl font-extrabold text-center`}>Welcome To Doksy</DialogTitle>
+                    <DialogTitle className={`${changa.className} text-3xl font-extrabold text-center text-[#333333]`}>Welcome To Doksy</DialogTitle>
                     <DialogDescription className='text-center'>
                         Login with your github account to connect with your github repo
                     </DialogDescription>
                 </DialogHeader>
-                < Button variant="default" onClick={signInWithGithub} disabled={isPending} className="w-full bg-[#242424] hover:bg-[#2e2e2e] hover:cursor-pointer'" >
+                < Button variant="default" onClick={signInWithGithub} disabled={isPending} className="w-full bg-[#242424] hover:bg-[#2e2e2e] text-white hover:cursor-pointer'" >
                     {
                         isPending ? (
                             <>
