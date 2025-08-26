@@ -35,14 +35,14 @@ const Features = [
   },
   {
     id: 2,
-    title: "Custom Domain Support",
-    description: "Host your docs on yourproject.doksy.site or connect your own custom domain.",
+    title: "Custom Domain Support Upcoming",
+    description: "Host your docs on yourproject.doksy.site domain.",
     image: "/og-image.png",
   },
   {
     id: 3,
     title: "GitHub Integration",
-    description: "Seamlessly sync with your GitHub repositories and maintain version control.",
+    description: "Seamlessly sync with your GitHub repositories.",
     image: "",
     icon: Github
   },
