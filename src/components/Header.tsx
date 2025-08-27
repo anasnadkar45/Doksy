@@ -10,9 +10,6 @@ import Image from 'next/image'
 const Header = () => {
     const {
         data: session,
-        isPending, //loading state
-        error, //error object
-        refetch //refetch the session
     } = authClient.useSession()
 
     const router = useRouter()
@@ -32,10 +29,14 @@ const Header = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             {session?.user.image && (
-                                <img
+                                <Image
                                     src={session.user.image || "/placeholder.svg"}
                                     alt={session.user.name || "User"}
                                     className="w-8 h-8 rounded-full"
+                                    loading='lazy'
+                                    unoptimized
+                                    width={100}
+                                    height={100}
                                 />
                             )}
                             <span className="text-sm text-muted-foreground">{session?.user.name || session?.user.email}</span>

@@ -74,8 +74,8 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
-        <Analytics/>
-        <SpeedInsights/>
+        {/* <Analytics/> */}
+        {/* <SpeedInsights/> */}
       </body>
     </html>
   );

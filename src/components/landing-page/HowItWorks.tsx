@@ -35,7 +35,12 @@ const Content = [
 const HowItWorks = () => {
   const [isActive, setIsActive] = useState(1)
   return (
-    <div className="">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="max-w-4xl mx-auto flex flex-col md:grid grid-cols-4 gap-6 px-4">
         {/* left side */}
         <motion.div
@@ -124,7 +129,7 @@ const HowItWorks = () => {
                   </div>
                   <Button variant={"ghost"}>
                     <motion.div animate={{ rotate: isActive === item.id ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                      {isActive === item.id ? <Minus className="text-[#333333]"/> : <Plus className="text-[#333333]"/>}
+                      {isActive === item.id ? <Minus className="text-[#333333]" /> : <Plus className="text-[#333333]" />}
                     </motion.div>
                   </Button>
                 </div>
@@ -146,7 +151,7 @@ const HowItWorks = () => {
           </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

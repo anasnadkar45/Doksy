@@ -1,21 +1,14 @@
-import { auth } from "@/app/lib/auth"
 import { headers } from "next/headers"
-import { redirect } from "next/navigation"
 import { notFound } from "next/navigation"
 import ProjectEditor from "@/components/editor/project-editor"
+import { requireUser } from "@/app/data/user/requireUser"
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
 export default async function EditProjectPage({ params }: PageProps) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-
-  if (!session?.user?.id) {
-    redirect("/login")
-  }
+  const user = await requireUser();
 
   // Fetch project data
   const response = await fetch(`${process.env.BETTER_AUTH_URL}/api/projects/${(await params).slug}`, {

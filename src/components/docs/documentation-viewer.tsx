@@ -18,7 +18,7 @@ import User from "../../../public/Icons/User"
 import Image from "next/image"
 import Rocket from "../../../public/Icons/Rocket"
 
-interface Page {
+export interface Page {
   id: string
   title: string
   slug: string
@@ -26,7 +26,7 @@ interface Page {
   order: number
 }
 
-interface Project {
+export interface Project {
   id: string
   name: string
   description: string | null
@@ -223,12 +223,16 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
       <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-dashed">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
+            <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              {sidebarOpen ? (
+                <X className="h-5 w-5" />
+              ):(
               <Menu className="h-5 w-5" />
+              )}
             </Button>
             <Link href={'/'}>
               <div className="flex items-center gap-3">
-                <Image src={'/Logo.svg'} alt='Doksy' width={40} height={40} />
+                <Image src={'/Logo.svg'} alt='Doksy' width={40} height={40} loading="lazy" unoptimized />
                 <div>
                   <h1 className="text-xl font-bold ">
                     {project.name}
@@ -261,18 +265,10 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
       <div className="flex flex-1 pt-[64]">
         {/* sidebar */}
         <aside
-          className={`w-72 border-r border-dashed bg-background transition-all duration-300 lg:block ${sidebarOpen ? "block" : "hidden"
+          className={`w-72 border-r h-full border-dashed bg-background transition-all duration-300 lg:block ${sidebarOpen ? "block" : "hidden"
             } lg:relative fixed inset-y-0 left-0 z-40 lg:z-auto pt-0 lg:pt-0`}
         >
-          <ScrollArea className="h-[calc(100vh-4rem)]">
-            <div className="flex items-center justify-between p-4 border-b border-dashed lg:hidden bg-card">
-              <span className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Navigation
-              </span>
-              <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(false)}>
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+          <ScrollArea className="h-[calc(100vh-4rem)] flex flex-col lg:flex-row mt-20 lg:mt-0">
 
             <div className="p-4 bg-background border-b border-dashed">
               <div className="relative">
@@ -286,52 +282,54 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 p-4">
-              <div className="space-y-2">
-                {filteredPages.map((page) => (
-                  <button
-                    key={page.id}
-                    onClick={() => navigateToPage(page.slug)}
-                    className={`w-full text-left px-4 py-3 rounded-sm text-sm font-medium transition-all duration-200 flex items-center justify-between hover:cursor-pointer group ${currentPage.id === page.id
-                      ? "bg-card border font-bold border-dashed"
-                      : "text-muted-foreground hover:bg-card/85"
-                      }`}
-                  >
-                    <span className="line-clamp-1">{page.title}</span>
-                    <ChevronRight
-                      className={`h-4 w-4 transition-all duration-200 ${currentPage.id === page.id
-                        ? "opacity-100 transform rotate-90"
-                        : "opacity-0 group-hover:opacity-100"
+            <div className="flex flex-col h-full justify-between">
+              {/* Navigation */}
+              <nav className="flex-1 p-4">
+                <div className="space-y-2">
+                  {filteredPages.map((page) => (
+                    <button
+                      key={page.id}
+                      onClick={() => navigateToPage(page.slug)}
+                      className={`w-full text-left px-4 py-3 rounded-sm text-sm font-medium transition-all duration-200 flex items-center justify-between hover:cursor-pointer group ${currentPage.id === page.id
+                        ? "bg-card border font-bold border-dashed"
+                        : "text-muted-foreground hover:bg-card/85"
                         }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </nav>
-
-            <div className="p-4 border-t border-dashed bg-card">
-              <div className="text-xs text-muted-foreground">
-                <div className="flex items-center gap-1 mb-2">
-                  <span>Created by</span>
-                  {project.user.githubUsername ? (
-                    <a
-                      href={`https://github.com/${project.user.githubUsername}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
-                      {project.user.name || project.user.githubUsername}
-                    </a>
-                  ) : (
-                    <span className="font-medium">{project.user.name || "Unknown"}</span>
-                  )}
+                      <span className="line-clamp-1">{page.title}</span>
+                      <ChevronRight
+                        className={`h-4 w-4 transition-all duration-200 ${currentPage.id === page.id
+                          ? "opacity-100 transform rotate-90"
+                          : "opacity-0 group-hover:opacity-100"
+                          }`}
+                      />
+                    </button>
+                  ))}
                 </div>
-                <div className="flex items-center gap-1">
-                  <span>Powered by</span>
-                  <Link href="/" className="text-primary hover:underline font-medium">
-                    Doksy
-                  </Link>
+              </nav>
+
+              <div className="p-4 border-t border-dashed bg-card ">
+                <div className="text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1 mb-2">
+                    <span>Created by</span>
+                    {project.user.githubUsername ? (
+                      <a
+                        href={`https://github.com/${project.user.githubUsername}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                      >
+                        {project.user.name || project.user.githubUsername}
+                      </a>
+                    ) : (
+                      <span className="font-medium">{project.user.name || "Unknown"}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>Powered by</span>
+                    <Link href="/" className="text-primary hover:underline font-medium">
+                      Doksy
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -342,9 +340,9 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
           <div className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
-        <div className="w-full flex">
+        <div className="w-full md:flex mx-auto mb-4 md:mb-0">
           <main className="flex-1 min-w-0 lg:ml-0">
-            <ScrollArea className="h-[calc(100vh-4rem)] scrollbar-hide">
+            <ScrollArea className="h-fit md:h-[calc(100vh-4rem)] scrollbar-hide">
               <div className="max-w-3xl mx-auto px-6 py-8">
                 <nav className="flex items-center bg-card gap-2 text-sm mb-8 p-3 border rounded-sm border-dashed">
                   <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -519,6 +517,7 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
                             <Button
                               variant="outline"
                               onClick={() => navigateToPage(prevPage.slug)}
+                              className="max-w-[200px] overflow-hidden justify-start"
 
                             >
                               ← {prevPage.title}
@@ -530,6 +529,7 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
                             <Button
                               variant="outline"
                               onClick={() => navigateToPage(nextPage.slug)}
+                              className="max-w-[200px] overflow-hidden justify-end"
                             >
                               {nextPage.title} →
                             </Button>
@@ -543,7 +543,7 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
             </ScrollArea>
           </main>
 
-          <Card className="max-w-[250px] h-fit mr-16 mt-16 ml-4 flex flex-col items-center justify-center border-dashed text-center">
+          <Card className="md:max-w-[250px] h-fit mx-4 md:mr-16 md:mt-16 md:ml-4 flex flex-col items-center justify-center border-dashed text-center">
             <CardHeader className="w-full">
               <Rocket className="size-14 mx-auto" />
               <CardTitle className="text-2xl text-center font-bold text-primary">

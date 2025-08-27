@@ -3,13 +3,13 @@ import React, {SVGProps} from 'react';
 type IconProps = SVGProps<SVGSVGElement> & {
 	secondaryfill?: string;
 	strokewidth?: number;
-	title?: string;
+	
 }
 
-function UnLock({title = 'badge 13', ...props}: IconProps) {
+function UnLock({ ...props}: IconProps) {
 	return (
 		<svg height="18" width="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" {...props}>
-	<title>{title}</title>
+	
 	<g fill="#9f9fa9">
 		<path d="M3 10.25C3 8.73128 4.23069 7.5 5.75 7.5H13.25C14.7693 7.5 16 8.73128 16 10.25V14.25C16 15.7687 14.7693 17 13.25 17H5.75C4.23069 17 3 15.7687 3 14.25V10.25Z" fill="#9f9fa9" fillOpacity="0.4" fillRule="evenodd"/>
 		<path d="M9.5 11C9.91421 11 10.25 11.3358 10.25 11.75V12.75C10.25 13.1642 9.91421 13.5 9.5 13.5C9.08579 13.5 8.75 13.1642 8.75 12.75V11.75C8.75 11.3358 9.08579 11 9.5 11Z" fill="#9f9fa9" fillRule="evenodd"/>

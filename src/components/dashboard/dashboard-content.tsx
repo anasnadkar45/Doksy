@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import RepoSelector from "./repo-selector"
 import ProjectList from "./project-list"
 import DashboardStats from "./dashboard-stats"
-import { Input } from "../ui/input"
 import Plus from "../../../public/Icons/Plus"
 
 interface User {
@@ -26,13 +25,6 @@ export default function DashboardContent({ user }: DashboardContentProps) {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
-        {/* <div className="flex gap-4">
-          <Input className="w-full" />
-          <Button onClick={() => setShowRepoSelector(true)} className="flex items-center gap-2">
-            <Plus />
-            Create New Project
-          </Button>
-        </div> */}
 
         {/* Stats */}
         <DashboardStats />

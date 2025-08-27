@@ -57,8 +57,10 @@ const FeatureImageCard = ({
                         <Image
                             src={feature.image || "/placeholder.svg"}
                             alt={feature.title}
-                            width={1000}
-                            height={1000}
+                            width={400}
+                            height={180}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            loading="lazy"
                             className="h-full w-full object-cover opacity-60"
                         />
                     </motion.div>

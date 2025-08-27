@@ -3,13 +3,13 @@ import React, {SVGProps} from 'react';
 type IconProps = SVGProps<SVGSVGElement> & {
 	secondaryfill?: string;
 	strokewidth?: number;
-	title?: string;
+	
 }
 
-function GlobePointer({title = 'badge 13', ...props}: IconProps) {
+function GlobePointer({ ...props}: IconProps) {
 	return (
 		<svg height="18" width="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" {...props}>
-	<title>{title}</title>
+	
 	<g fill="#9f9fa9">
 		<path d="M11.126 10.768L17.066 12.938C17.316 13.029 17.309 13.386 17.055 13.467L14.336 14.337L13.466 17.056C13.385 17.31 13.028 17.317 12.937 17.067L10.767 11.127C10.685 10.904 10.902 10.687 11.126 10.768Z" fill="#9f9fa9" opacity="0.3" stroke="none"/>
 		<path d="M10.1116 16.07C9.5746 16.197 9.076 16.25 8.5 16.25C4.496 16.25 1.25 13.004 1.25 9C1.25 4.996 4.496 1.75 8.5 1.75C12.504 1.75 15.75 4.996 15.75 9C15.75 9.351 15.7525 9.4795 15.7045 9.8175L15.4741 9.96091L11.898 8.655L11.891 8.65201C9.88799 7.92801 7.90899 9.866 8.65399 11.901L8.655 11.903L10.1264 15.9313L10.1116 16.07Z" fill="#9f9fa9" fillRule="evenodd" opacity="0.3" stroke="none"/>

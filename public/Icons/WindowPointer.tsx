@@ -3,12 +3,12 @@ import { SVGProps } from "react";
 type IconProps = SVGProps<SVGSVGElement> & {
 	secondaryfill?: string;
 	strokewidth?: number;
-	title?: string;
+	
 }
-function WindowPointer({title = 'badge 13', ...props}: IconProps) {
+function WindowPointer({ ...props}: IconProps) {
 	return (
 		<svg height="18" width="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" {...props}>
-	<title>{title}</title>
+	
 	<g fill="#9f9fa9">
 		<path d="M17.0001 10.5205L11.8884 8.6532C9.90227 7.94296 7.92774 9.86636 8.64764 11.8856L10.1507 16H3.75006C2.23136 16 1.00006 14.7686 1.00006 13.25V7H17.0001V10.5205Z" fill="#9f9fa9" fillOpacity="0.4"/>
 		<path d="M10.0605 11.3819C9.77093 10.5695 10.574 9.7762 11.3833 10.0656L17.3221 12.2351C18.244 12.5691 18.2194 13.8877 17.2823 14.1846L14.9326 14.9364L14.1795 17.2913C13.8828 18.2069 12.5724 18.2599 12.2324 17.3269" fill="#9f9fa9" fillRule="evenodd"/>

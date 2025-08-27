@@ -3,13 +3,13 @@ import React, {SVGProps} from 'react';
 type IconProps = SVGProps<SVGSVGElement> & {
 	secondaryfill?: string;
 	strokewidth?: number;
-	title?: string;
+	
 }
 
-function CloudUpload({title = 'badge 13', ...props}: IconProps) {
+function CloudUpload({ ...props}: IconProps) {
 	return (
 		<svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
-	<title>{title}</title>
+	
 	<g fill="none">
 		<path d="M3.0665 9.35256C3.62627 5.24736 7.20427 2 11.5 2C15.7459 2 19.1859 5.0787 19.8907 9.07982C22.2211 9.50238 24 11.5515 24 14C24 16.7523 21.7523 19 19 19H5C2.24772 19 0 16.7523 0 14C0 11.9104 1.26852 10.0904 3.0665 9.35256Z" fill="url(#1752500502778-5732140_cloud-upload_existing_0_tc5etxiwk)" fillRule="evenodd" mask="url(#1752500502778-5732140_cloud-upload_mask_ww59vctrr)" data-glass="origin"/>
 		<path clipPath="url(#1752500502778-5732140_cloud-upload_clipPath_q45bzylec)" d="M3.0665 9.35256C3.62627 5.24736 7.20427 2 11.5 2C15.7459 2 19.1859 5.0787 19.8907 9.07982C22.2211 9.50238 24 11.5515 24 14C24 16.7523 21.7523 19 19 19H5C2.24772 19 0 16.7523 0 14C0 11.9104 1.26852 10.0904 3.0665 9.35256Z" fill="url(#1752500502778-5732140_cloud-upload_existing_0_tc5etxiwk)" fillRule="evenodd" data-glass="clone"/>

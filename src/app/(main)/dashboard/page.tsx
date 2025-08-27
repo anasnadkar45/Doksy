@@ -1,16 +1,8 @@
-import { auth } from "@/app/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
 import DashboardContent from "@/components/dashboard/dashboard-content"
+import { requireUser } from "@/app/data/user/requireUser";
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+  const user = await requireUser();
 
-  if (!session?.user?.id) {
-    redirect("/login")
-  }
-
-  return <DashboardContent user={session?.user as any} />
+  return <DashboardContent user={user?.user as any} />
 }

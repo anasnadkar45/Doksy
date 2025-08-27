@@ -1,14 +1,19 @@
 import { notFound } from "next/navigation"
 import DocumentationViewer from "@/components/docs/documentation-viewer"
 import { prisma } from "@/app/lib/db"
+import { Suspense } from "react"
+import DocumentationSkeleton from "@/components/docs/documentation-skeleton"
 
 interface PageProps {
   params: Promise<{ slug: string }>
   searchParams: Promise<{ page?: string }>
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function DocumentationPage({ params, searchParams }: PageProps) {
   // Fetch published project
+
   const project = await prisma.project.findFirst({
     where: {
       slug: (await params).slug,
@@ -39,7 +44,11 @@ export default async function DocumentationPage({ params, searchParams }: PagePr
     notFound()
   }
 
-  return <DocumentationViewer project={project} currentPage={currentPage} />
+  return (
+    <Suspense fallback={<DocumentationSkeleton />}>
+      <DocumentationViewer project={project} currentPage={currentPage} />
+    </Suspense>
+  )
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
