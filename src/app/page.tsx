@@ -229,7 +229,7 @@ export default function Home() {
               <Copy className="size-4" />
             </div>
             <Image
-              src={"/og-image.png"}
+              src={"/ReadmeToDocs.png"}
               alt="Hero Image"
               width={1000}
               height={600}
