@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import Footer from "@/components/landing-page/Footer"
 import Hero from "./Hero"
 import Header from "./Header"
+import { MaintenanceBanner } from "../maintenance-banner"
 
 const LandingPage = () => {
     return (
@@ -15,6 +16,7 @@ const LandingPage = () => {
             transition={{ duration: 0.5 }}
         >
             <div className="max-w-5xl min-h-screen h-full space-y-10 border-x border-dashed dark:border-[#d0d0d0] mx-auto">
+                <MaintenanceBanner />
                 <Header />
                 <Hero />
                 <HowItWorks />
