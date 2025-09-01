@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import { Save, Settings2 } from 'lucide-react'
 import { Input } from '../ui/input'
 import { toast } from 'sonner'
-import { Project } from './project-editor'
+import { Project } from './project-editor-milkdow'
 
 const Settings = ({ project, setProject }: {
     project: Project,
