@@ -5,15 +5,12 @@ import DocumentationSkeleton from "@/components/docs/documentation-skeleton"
 import DocumentationViewer from "@/components/docs/documentation-viewer"
 import { Metadata } from "next"
 
-interface PageProps {
-  params: { slug: string[] }
-}
 
 
 export const dynamic = "force-dynamic"
 
-export default async function DocumentationPage({ params }: PageProps) {
-  const slug = params?.slug ?? []
+export default async function DocumentationPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const slug = (await params).slug ?? []
   if (slug.length === 0) return notFound()
 
   const projectSlug = slug[0]
@@ -73,8 +70,8 @@ export default async function DocumentationPage({ params }: PageProps) {
   )
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slugArray = params?.slug ?? []
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }>}): Promise<Metadata> {
+  const slugArray = (await params).slug ?? []
   if (slugArray.length === 0) return { title: "Not Found" }
 
   const projectSlug = slugArray[0]
