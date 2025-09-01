@@ -32,7 +32,7 @@ export async function GET() {
     const recentProjects = await prisma.project.findMany({
       where: { userId: session.user.id },
       orderBy: { updatedAt: "desc" },
-      take: 5,
+      take: 3,
       select: {
         id: true,
         name: true,

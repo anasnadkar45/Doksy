@@ -53,7 +53,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      {/* <head>
 
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-W5MPEX0581"></Script>
         <Script>
@@ -65,7 +65,7 @@ export default function RootLayout({
           gtag('config', 'G-W5MPEX0581');
           `}
         </Script>
-      </head>
+      </head> */}
       <body
         className={`${ibm.className} antialiased`}
       >
@@ -78,8 +78,8 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
-        <Analytics />
-        <SpeedInsights />
+        {/* <Analytics />
+        <SpeedInsights /> */}
       </body>
     </html>
   );

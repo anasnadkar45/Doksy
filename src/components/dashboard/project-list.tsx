@@ -140,7 +140,7 @@ export default function ProjectList() {
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setPublishingProject(project)}><CloudUpload /> Publish</DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/projects/${project.slug}/edit`} className="flex items-center gap-2">
+                        <Link href={`/dashboard/projects/${project.slug}/edit`} className="flex items-center gap-2">
                           <Edit /> Edit
                         </Link>
                       </DropdownMenuItem>

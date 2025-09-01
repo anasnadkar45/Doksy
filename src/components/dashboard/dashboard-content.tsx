@@ -5,6 +5,7 @@ import RepoSelector from "./repo-selector"
 import ProjectList from "./project-list"
 import DashboardStats from "./dashboard-stats"
 import Plus from "../../../public/Icons/Plus"
+import { AnimatePresence } from "framer-motion"
 
 interface User {
   id: string
@@ -21,7 +22,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
   const [showRepoSelector, setShowRepoSelector] = useState(false)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-full">
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
@@ -40,7 +41,9 @@ export default function DashboardContent({ user }: DashboardContentProps) {
         </div>
 
         {/* Repository Selector Modal */}
-        {showRepoSelector && <RepoSelector onClose={() => setShowRepoSelector(false)} />}
+        <AnimatePresence>
+          {showRepoSelector && <RepoSelector onClose={() => setShowRepoSelector(false)} />}
+        </AnimatePresence>
 
         {/* Projects List */}
         <ProjectList />

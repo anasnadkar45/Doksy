@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "prism-themes/themes/prism-one-dark.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,7 +50,7 @@
   --shadow-xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.38);
   --tracking-normal: 0em;
-  --spacing: 0.21rem;
+  --spacing: 0.20rem;
 }
 
 .dark {
@@ -175,4 +176,11 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* WebKit */
+}
+
+pre[class*="language-"] {
+  border-radius: 0.5rem;
+  background: var(--background);
+  padding: 1rem;
+  overflow-x: auto;
 }

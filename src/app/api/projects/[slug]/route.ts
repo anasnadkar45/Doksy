@@ -70,7 +70,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     return NextResponse.json({ success: true })
   } catch (error) {
-
+    return NextResponse.json({ error: "There was error deleting project." })
   }
 }
 

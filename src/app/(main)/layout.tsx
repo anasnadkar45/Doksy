@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+// app/(main)/layout.tsx
 import React, { ReactNode } from 'react'
 
 const layout = ({ children }: {
@@ -6,11 +6,9 @@ const layout = ({ children }: {
 }) => {
     return (
         <div>
-            <Header />
-            <div>
-                {children}
-            </div>
+            {children}
         </div>
+
     )
 }
 

@@ -84,6 +84,7 @@ model Verification {
 model Project {
   id          String   @id @default(cuid())
   name        String
+  icon        String?
   description String?
   liveUrl     String?
   creator     String?
