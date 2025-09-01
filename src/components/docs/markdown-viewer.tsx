@@ -1,32 +1,16 @@
-// "use client" because we use state for copy UI
 "use client"
 
 import React, { useCallback, useMemo, useState } from "react"
 import ReactMarkdown from "react-markdown"
+import type { PluggableList } from "unified"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
-import rehypeSanitize from "rehype-sanitize"
-import { defaultSchema } from "hast-util-sanitize"
 import rehypeSlug from "rehype-slug"
-import rehypePrism from "rehype-prism-plus"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
+import rehypeSanitize from "rehype-sanitize"
+import rehypePrism from "rehype-prism-plus"
+import { safeSchema } from "./safe-schema"
 import { Quote } from "lucide-react"
-
-function CopyIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path stroke="currentColor" strokeWidth="2" d="M9 9h10v10H9z" />
-      <path stroke="currentColor" strokeWidth="2" d="M5 15V5h10" />
-    </svg>
-  )
-}
-function CheckIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path stroke="currentColor" strokeWidth="2" d="M20 6 9 17l-5-5" />
-    </svg>
-  )
-}
 
 export type MarkdownViewerProps = {
   content: string
@@ -35,49 +19,19 @@ export type MarkdownViewerProps = {
 
 const blockLikeTags = new Set(["DIV", "PRE", "TABLE", "UL", "OL", "BLOCKQUOTE", "IMG", "HR"])
 
+// Type-safe plugin lists
+const remarkPlugins = [remarkGfm] satisfies PluggableList
+const rehypePlugins = [
+  rehypeRaw,
+  rehypeSlug,
+  [rehypeAutolinkHeadings, { behavior: "append" }] as const,
+  [rehypeSanitize, safeSchema] as const,
+  rehypePrism,
+] satisfies PluggableList
+
 export default function MarkdownViewer({ content, className }: MarkdownViewerProps) {
-  const remarkPlugins = useMemo(() => [remarkGfm], [])
-
-  const safeSchema: any = useMemo(
-    () => ({
-      ...defaultSchema,
-      attributes: {
-        ...defaultSchema.attributes,
-        a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"], ["className"]],
-        code: [...(defaultSchema.attributes?.code || []), ["className", "data-language"]],
-        pre: [...(defaultSchema.attributes?.pre || []), ["className"]],
-        img: [
-          ...(defaultSchema.attributes?.img || []),
-          ["className"],
-          ["alt"],
-          ["width"],
-          ["height"],
-          ["loading"],
-          ["decoding"],
-        ],
-        div: [...(defaultSchema.attributes?.div || []), ["className"]],
-        span: [...(defaultSchema.attributes?.span || []), ["className"]],
-        table: [...(defaultSchema.attributes?.table || []), ["className"]],
-        th: [...(defaultSchema.attributes?.th || []), ["className"]],
-        td: [...(defaultSchema.attributes?.td || []), ["className"]],
-        h1: [...(defaultSchema.attributes?.h1 || []), ["className", "id"]],
-        h2: [...(defaultSchema.attributes?.h2 || []), ["className", "id"]],
-        h3: [...(defaultSchema.attributes?.h3 || []), ["className", "id"]],
-        p: [...(defaultSchema.attributes?.p || []), ["className"]],
-        ul: [...(defaultSchema.attributes?.ul || []), ["className"]],
-        ol: [...(defaultSchema.attributes?.ol || []), ["className"]],
-        li: [...(defaultSchema.attributes?.li || []), ["className"]],
-        blockquote: [...(defaultSchema.attributes?.blockquote || []), ["className"]],
-        hr: [...(defaultSchema.attributes?.hr || []), ["className"]],
-      },
-    }),
-    [],
-  )
-
-  const rehypePlugins = useMemo(
-    () => [rehypeRaw, rehypeSlug, [rehypeAutolinkHeadings, { behavior: "append" }], [rehypeSanitize, safeSchema], rehypePrism],
-    [safeSchema],
-  )
+  const remarkList = useMemo(() => remarkPlugins, [])
+  const rehypeList = useMemo(() => rehypePlugins, [])
 
   const CodeBlock: React.FC<React.HTMLAttributes<HTMLElement> & { inline?: boolean }> = ({
     inline,
@@ -100,18 +54,18 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
       const m = /language-([\w-]+)/.exec(codeClass || "")
       return m?.[1] || ""
     }, [codeClass])
-    
 
-    // Inline code MUST remain phrasing content to avoid <pre> inside <p>
     if (inline) {
       return (
-        <code className={`w-fit rounded-full text-amber-200 bg-muted px-1.5 py-0.5 font-mono text-[0.85em] ${codeClass || ""}`} {...props}>
+        <code
+          className={`w-fit rounded-full text-amber-200 bg-muted px-1.5 py-0.5 font-mono text-[0.85em] ${codeClass || ""}`}
+          {...props}
+        >
           {children}
         </code>
       )
     }
 
-    // Block code: render outside of paragraphs; ReactMarkdown will place this at block-level.
     return (
       <div className="relative my-4 group">
         <button
@@ -120,7 +74,16 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
           aria-label="Copy code to clipboard"
           className="absolute right-2.5 top-2.5 z-10 rounded border bg-background/80 px-1 py-1 text-xs text-foreground shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100 opacity-0 hover:bg-background focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {copied ? <CheckIcon /> : <CopyIcon />}
+          {copied ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path stroke="currentColor" strokeWidth="2" d="M20 6 9 17l-5-5" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path stroke="currentColor" strokeWidth="2" d="M9 9h10v10H9z" />
+              <path stroke="currentColor" strokeWidth="2" d="M5 15V5h10" />
+            </svg>
+          )}
         </button>
         {lang ? (
           <span className="pointer-events-none absolute right-12 top-2.5 z-10 rounded bg-secondary/70 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-secondary-foreground/80">
@@ -128,7 +91,7 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
           </span>
         ) : null}
         <pre
-          className={`overflow-auto rounded-lg border bg-secondary/10 p-4 font-mono text-sm leading-relaxed`}
+          className="overflow-auto rounded-lg border bg-secondary/10 p-4 font-mono text-sm leading-relaxed"
           tabIndex={0}
         >
           <code className={codeClass} {...props}>
@@ -174,8 +137,8 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
   return (
     <div className={className}>
       <ReactMarkdown
-        remarkPlugins={remarkPlugins}
-        rehypePlugins={rehypePlugins}
+        remarkPlugins={remarkList}
+        rehypePlugins={rehypeList}
         components={{
           code: CodeBlock as any,
           p: Paragraph as any,
@@ -189,7 +152,9 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
               {children}
             </a>
           ),
-          img: ({ alt, ...props }) => <img {...props} alt={alt || ""} className="mx-auto my-4 max-w-full rounded-2xl bg-transparent" />,
+          img: ({ alt, ...props }) => (
+            <img {...props} alt={alt || ""} className="mx-auto my-4 max-w-full rounded-2xl bg-transparent" />
+          ),
           table: ({ children }) => (
             <div className="my-4 overflow-x-auto border rounded-xl border-dashed">
               <table className="w-full border-collapse">{children}</table>
@@ -203,7 +168,11 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
           ul: ({ children }) => <ul className="my-4 ml-6 list-disc text-muted-foreground">{children}</ul>,
           ol: ({ children }) => <ol className="my-4 ml-6 list-decimal">{children}</ol>,
           blockquote: ({ children }) => (
-            <blockquote className="relative w-fit my-4 border-l-4 border-muted px-8 py-6 bg-secondary/20 rounded-r-lg text-muted-foreground"><Quote className="absolute top-2 left-2 rotate-180"/>{children}<Quote className="absolute bottom-2 right-2"/></blockquote>
+            <blockquote className="relative w-fit my-4 border-l-4 border-muted px-8 py-6 bg-secondary/20 rounded-r-lg text-muted-foreground">
+              <Quote className="absolute top-2 left-2 rotate-180" />
+              {children}
+              <Quote className="absolute bottom-2 right-2" />
+            </blockquote>
           ),
           hr: () => <hr className="my-8 border-border" />,
         }}
