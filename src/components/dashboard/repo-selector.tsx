@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { X, Search, Star, ExternalLink, Loader } from "lucide-react"
+import { X, Search, Star, Loader, ChevronLeft, ChevronRight } from "lucide-react"
 import type { GitHubRepo } from "@/app/lib/github"
 import { toast } from "sonner"
 import { ScrollArea } from "../ui/scroll-area"
@@ -23,31 +23,13 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [filteredRepos, setFilteredRepos] = useState<GitHubRepo[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchInput, setSearchInput] = useState("")
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null)
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState(false)
   const [selected, setSelected] = useState<"private" | "public" | null>(null)
-
-  useEffect(() => {
-    fetchRepos()
-  }, [])
-
-  const fetchRepos = async () => {
-    try {
-      const response = await fetch("/api/github/repos")
-      if (!response.ok) throw new Error("Failed to fetch repositories")
-
-      const data = await response.json()
-      setRepos(data.repos)
-      setFilteredRepos(data.repos)
-    } catch (error) {
-      console.error("Error fetching repos:", error)
-      toast.error("Failed to fetch repositories")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleCreateProject = async () => {
     if (!selectedRepo) return
@@ -83,12 +65,46 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchQuery(searchInput)
-    }, 400);
+    fetchRepos(1) // Initial load
+  }, [])
 
-    return () => clearTimeout(timer)
-  }, [searchInput])
+  const fetchRepos = async (page = 1) => {
+    setLoading(true)
+
+    try {
+      const response = await fetch(`/api/github/repos?page=${page}&per_page=30`)
+      if (!response.ok) throw new Error("Failed to fetch repositories")
+
+      const data = await response.json()
+
+      setRepos(data.repos)
+      setFilteredRepos(data.repos)
+      setCurrentPage(page)
+
+      // Calculate total pages based on hasMore flag
+      if (!data.hasMore && data.repos.length < 10) {
+        setTotalPages(page)
+      } else if (data.hasMore) {
+        setTotalPages(page + 1) // At least one more page exists
+      }
+    } catch (error) {
+      console.error("Error fetching repos:", error)
+      toast.error("Failed to fetch repositories")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      fetchRepos(currentPage - 1)
+    }
+  }
+
+  const handleNextPage = () => {
+    fetchRepos(currentPage + 1)
+  }
+
   useEffect(() => {
     let filtered = repos
 
@@ -97,21 +113,24 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
       filtered = filtered.filter(
         (repo) =>
           repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          repo.description?.toLowerCase().includes(searchQuery.toLowerCase())
+          repo.description?.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     }
 
     // filter by visibility
     if (selected) {
-      filtered = filtered.filter((repo) =>
-        selected === "private" ? repo.private : !repo.private
-      )
+      filtered = filtered.filter((repo) => (selected === "private" ? repo.private : !repo.private))
     }
 
     setFilteredRepos(filtered)
   }, [selected, searchQuery, repos])
 
-  console.log(repos)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSearchQuery(searchInput)
+    }, 300)
+    return () => clearTimeout(timeoutId)
+  }, [searchInput])
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -120,9 +139,9 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
         transition={{
-          duration: 0.5, // exit + enter duration
+          duration: 0.5,
           ease: "easeInOut",
-          type: "tween" // important for duration to work properly
+          type: "tween",
         }}
       >
         <Card className="w-full max-w-4xl h-fit overflow-hidden">
@@ -132,11 +151,9 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
               <X className="h-4 w-4" />
             </Button>
           </CardHeader>
-          <CardContent >
+          <CardContent>
             {/* Search */}
             <div className="flex items-center gap-4 pb-6 border-b">
-              {/* filter */}
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="hover:cursor-pointer">
                   <Button variant={"secondary"}>
@@ -153,7 +170,7 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
               {selected && (
-                <Button variant={"destructive"} className="hover:cursor-pointer">
+                <Button variant={"destructive"} className="hover:cursor-pointer" onClick={() => setSelected(null)}>
                   <X /> Clear
                 </Button>
               )}
@@ -186,8 +203,9 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                   {filteredRepos.map((repo) => (
                     <div
                       key={repo.id}
-                      className={`p-4 hover:bg-secondary/30 cursor-pointer transition-colors ${selectedRepo?.id === repo.id ? "bg-sidebar border-l-4" : ""
-                        }`}
+                      className={`p-4 hover:bg-secondary/30 cursor-pointer transition-colors ${
+                        selectedRepo?.id === repo.id ? "bg-sidebar border-l-4" : ""
+                      }`}
                       onClick={() => setSelectedRepo(repo)}
                     >
                       <div className="flex items-start justify-between">
@@ -223,6 +241,29 @@ export default function RepoSelector({ onClose }: RepoSelectorProps) {
                 </div>
               )}
             </ScrollArea>
+
+            {!loading && repos.length > 0 && (
+              <div className="flex items-center justify-between py-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages > currentPage ? `${totalPages}+` : totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1 || loading}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleNextPage} disabled={loading}>
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Footer */}
             <div className="p-6 border-t bg-sidebar rounded-b-lg">

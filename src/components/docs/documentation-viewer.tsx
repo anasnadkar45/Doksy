@@ -9,6 +9,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
 import MarkdownViewer from "./markdown-viewer"
 import PromotionCard from "./PromotionCard"
+import { CommentStatus, CommentType } from "@/generated/prisma"
+import MyComments from "./MyComments"
 
 export interface Page {
   id: string
@@ -26,6 +28,7 @@ export interface Project {
   creator: string | null
   slug: string
   githubUrl: string
+  canComment:Boolean
   user: {
     name: string | null
     githubUsername: string | null
@@ -33,12 +36,32 @@ export interface Project {
   pages: Page[]
 }
 
+export interface User {
+  id: string
+  email: string
+  name: string
+  image: string
+}
+
+export interface Comment {
+  id: string
+  commentFor: string
+  message: string
+  type: CommentType
+  status: CommentStatus
+  page: string
+  createdAt: Date
+  userId:string | null
+}
+
 interface DocumentationViewerProps {
   project: Project
   currentPage: Page
+  user: User
+  comments: Comment[]
 }
 
-export default function DocumentationViewer({ project, currentPage }: DocumentationViewerProps) {
+export default function DocumentationViewer({ project, currentPage, user, comments }: DocumentationViewerProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
@@ -69,6 +92,7 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
             </Link>
           </div>
           <div className="flex items-center gap-2">
+            <MyComments comments={comments} slug={project.slug}/>
             <Button size="sm" variant={"secondary"} asChild>
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
@@ -189,6 +213,11 @@ export default function DocumentationViewer({ project, currentPage }: Documentat
 
               <MarkdownViewer
                 content={currentPage.content ?? ""}
+                projectId={project.id}
+                canUserComment={project.canComment}
+                slug={project.slug}
+                pageName={currentPage.title}
+                user={user}
                 className="prose prose-lg max-w-none dark:prose-invert"
               />
 

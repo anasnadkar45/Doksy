@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import Edit from '../../../../../../../public/Icons/Edit'
 import Settings from '../../../../../../../public/Icons/Settings'
+import Message from '../../../../../../../public/Icons/Message'
+import Addon from '../../../../../../../public/Icons/Addon'
 
 const NavLinks = [
     {
@@ -18,12 +20,23 @@ const NavLinks = [
         href: "settings",
         icon: Settings
     },
+    {
+        id: 2,
+        name: "Feedback & Comments",
+        href: "feedback-&-issues",
+        icon: Message
+    },
+    {
+        id: 3,
+        name: "Dockits",
+        href: "dockits",
+        icon: Addon
+    },
 ]
 const ProjectSidebar = () => {
     const params = useParams();
     const activeLink = usePathname();
 
-    console.log(activeLink)
     return (
         <div className='min-w-[170px] border-r p-2'>
             {NavLinks.map((link) => (

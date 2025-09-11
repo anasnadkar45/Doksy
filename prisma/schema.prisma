@@ -33,6 +33,7 @@ model User {
 
   // Relations
   projects Project[]
+  comments Comment[]
 
   @@map("user")
 }
@@ -102,12 +103,16 @@ model Project {
   isPublished  Boolean @default(false)
   customDomain String?
 
+  // dockits
+  canComment Boolean @default(false)
+
   // User relation
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations
-  pages Page[]
+  pages    Page[]
+  comments Comment[]
 
   @@map("projects")
 }
@@ -132,4 +137,33 @@ model Page {
 
   @@unique([projectId, slug])
   @@map("pages")
+}
+
+model Comment {
+  id         String        @id @default(cuid())
+  commentFor String
+  type       CommentType   @default(COMMENT)
+  page       String
+  message    String
+  status     CommentStatus @default(OPEN)
+  createdAt  DateTime      @default(now())
+
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+enum CommentType {
+  COMMENT
+  TYPO
+  BUG
+  SUGGESTION
+  UNCLEAR
+}
+
+enum CommentStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
 }

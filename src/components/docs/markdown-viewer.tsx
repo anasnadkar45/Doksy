@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import ReactMarkdown from "react-markdown"
 import type { PluggableList } from "unified"
 import remarkGfm from "remark-gfm"
@@ -11,9 +11,25 @@ import rehypeSanitize from "rehype-sanitize"
 import rehypePrism from "rehype-prism-plus"
 import { safeSchema } from "./safe-schema"
 import { Quote } from "lucide-react"
+import { Textarea } from "../ui/textarea"
+import { Button, buttonVariants } from "../ui/button"
+import Message from "../../../public/Icons/Message"
+import Copy from "../../../public/Icons/Copy"
+import CopyDone from "../../../public/Icons/CopyDone"
+import { toast } from "sonner"
+import type { User } from "./documentation-viewer"
+import Link from "next/link"
+import { CommentStatus, CommentType } from "@/generated/prisma"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
+import { useRouter } from "next/navigation"
 
 export type MarkdownViewerProps = {
   content: string
+  projectId?: string
+  canUserComment?: Boolean
+  slug?: string
+  pageName?: string
+  user?: User
   className?: string
 }
 
@@ -29,9 +45,20 @@ const rehypePlugins = [
   rehypePrism,
 ] satisfies PluggableList
 
-export default function MarkdownViewer({ content, className }: MarkdownViewerProps) {
+export default function MarkdownViewer({ content, projectId, canUserComment, slug, pageName, user, className }: MarkdownViewerProps) {
   const remarkList = useMemo(() => remarkPlugins, [])
   const rehypeList = useMemo(() => rehypePlugins, [])
+  const [selectedText, setSelectedText] = useState("")
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [showOptions, setShowOptions] = useState(false)
+  const popupRef = useRef<HTMLDivElement>(null)
+  const [comment, setComment] = useState("")
+  const [commentType, setCommentType] = useState<CommentType>(CommentType.COMMENT)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
+  const [canComment, setCanComment] = useState(false)
+
+  const router = useRouter();
 
   const CodeBlock: React.FC<React.HTMLAttributes<HTMLElement> & { inline?: boolean }> = ({
     inline,
@@ -134,8 +161,184 @@ export default function MarkdownViewer({ content, className }: MarkdownViewerPro
     <h3 className="mt-6 text-xl font-semibold">{children}</h3>
   )
 
+  useEffect(() => {
+    if (user?.id) {
+      setCanComment(true)
+    }
+  }, [user])
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection()
+      const text = selection?.toString()
+
+      if (text?.trim()) {
+        const range = selection?.getRangeAt(0)
+        const rect = range?.getBoundingClientRect()
+        setSelectedText(text)
+        setComment("") // Reset comment when new text is selected
+        setPosition({
+          x: (rect?.left as number) + window.scrollX,
+          y: (rect?.top as number) + window.scrollY - 120,
+        })
+        setShowOptions(true)
+      }
+    }
+
+    document.addEventListener("mouseup", handleMouseUp)
+    return () => document.removeEventListener("mouseup", handleMouseUp)
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      const isSelectContent =
+        target.closest("[data-radix-select-content]") ||
+        target.closest("[data-radix-select-trigger]") ||
+        target.closest("[data-radix-select-item]") ||
+        target.closest("[data-radix-select-viewport]")
+
+      if (popupRef.current && !popupRef.current.contains(event.target as Node) && !isSelectContent) {
+        setShowOptions(false)
+        setComment("")
+        setIsCopied(false)
+      }
+    }
+
+    if (showOptions) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showOptions])
+
+  const handleComment = async () => {
+    const finalComment = comment
+    if (!finalComment.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const response = await fetch(`/api/docs/${slug}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({
+          message: finalComment,
+          page: pageName,
+          commentFor: selectedText,
+          status: CommentStatus.OPEN,
+          type: commentType,
+          projectId,
+          userId: user?.id,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success("Comment added successfully!")
+        router.refresh()
+      }
+
+      // Reset
+      setComment("")
+      setShowOptions(false)
+      setIsCopied(false)
+    } catch (error) {
+      console.error("Failed to submit comment:", error)
+      toast.error("Failed to add comment. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+      setIsCopied(false)
+    }
+  }
+
+  const handleCancel = () => {
+    setShowOptions(false)
+    setComment("")
+    setIsCopied(false)
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(selectedText)
+    setIsCopied(true)
+  }
+
+  const handleCommentTypeChange = (value: string) => {
+    setCommentType(value as CommentType)
+  }
+
   return (
     <div className={className}>
+      <div>
+        {(showOptions && canUserComment) && (
+          <div className="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div
+              ref={popupRef}
+              className="h-fit p-3 rounded-lg border bg-card shadow-lg flex flex-col w-fit gap-3 min-w-[300px]"
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex w-full justify-between items-center">
+                  <div className="text-sm font-medium text-muted-foreground">Selected text:</div>
+                  <Button size={"icon"} variant={"ghost"} onClick={handleCopy}>
+                    {isCopied ? <CopyDone className="size-6" /> : <Copy className="size-6" />}
+                  </Button>
+                </div>
+                <div className="text-sm bg-muted p-2 rounded border max-w-[400px] truncate">"{selectedText}"</div>
+              </div>
+
+              <Textarea
+                value={comment}
+                disabled={!canComment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Add your comment or describe the issue..."
+                className="max-w-2xl max-h-[200px] overflow-auto bg-background resize-none"
+                rows={3}
+                autoFocus
+              />
+
+              <div className="flex gap-2 justify-between items-center">
+                <Select value={commentType} onValueChange={handleCommentTypeChange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Comment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Comment Type</SelectLabel>
+                      {Object.entries(CommentType).map(([name, type]) => (
+                        <SelectItem key={type} value={type}>
+                          {name.charAt(0) + name.slice(1).toLowerCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSubmitting}>
+                    Cancel
+                  </Button>
+                  {canComment ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleComment}
+                      disabled={!comment.trim() || isSubmitting}
+                    >
+                      <Message />
+                      {isSubmitting ? "Adding..." : "Add Comment"}
+                    </Button>
+                  ) : (
+                    <Link href={"/login"} className={buttonVariants()}>
+                      Login To Comment
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <ReactMarkdown
         remarkPlugins={remarkList}
         rehypePlugins={rehypeList}

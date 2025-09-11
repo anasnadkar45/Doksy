@@ -19,8 +19,6 @@ const getProjectData = async (userId: string, slug: string) => {
 export async function SettingsTabs({ slug }: { slug: string}) {
     const user = requireUser()
     const projectData = await getProjectData((await user).user.id, slug);
-
-    console.log(projectData)
     return (
         <Tabs defaultValue="general" className="w-full">
             <div className="flex flex-col gap-6 w-full">

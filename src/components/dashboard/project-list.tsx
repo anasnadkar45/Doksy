@@ -16,6 +16,7 @@ import Menu from "../../../public/Icons/Menu"
 import GlobePointer from "../../../public/Icons/Globe"
 import Edit from "../../../public/Icons/Edit"
 import Delete from "../../../public/Icons/Delete"
+import { useRouter } from "next/navigation"
 
 interface Project {
   id: string
@@ -33,7 +34,7 @@ export default function ProjectList() {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [publishingProject, setPublishingProject] = useState<Project | null>(null)
-
+  const router = useRouter()
   useEffect(() => {
     fetchProjects()
   }, [])
@@ -110,7 +111,8 @@ export default function ProjectList() {
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
-          <Card key={project.id} className="hover:shadow-md hover:bg-card/50 transition-all duration-300">
+
+          <Card onClick={() => router.push(`/dashboard/projects/${project.slug}/edit`)} key={project.id} className="hover:shadow-md hover:bg-card/50 hover:cursor-pointer transition-all duration-300">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>

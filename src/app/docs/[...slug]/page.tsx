@@ -2,14 +2,17 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/app/lib/db"
 import { Suspense } from "react"
 import DocumentationSkeleton from "@/components/docs/documentation-skeleton"
-import DocumentationViewer from "@/components/docs/documentation-viewer"
+import DocumentationViewer, { Comment, User } from "@/components/docs/documentation-viewer"
 import { Metadata } from "next"
-
-
+import { auth } from "@/app/lib/auth"
+import { headers } from "next/headers"
 
 export const dynamic = "force-dynamic"
 
 export default async function DocumentationPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
   const slug = (await params).slug ?? []
   if (slug.length === 0) return notFound()
 
@@ -27,6 +30,7 @@ export default async function DocumentationPage({ params }: { params: Promise<{ 
       creator: true,
       slug: true,
       githubUrl: true,
+      canComment: true,
       user: { select: { name: true, githubUsername: true } },
       pages: {
         orderBy: { order: "asc" },
@@ -36,7 +40,6 @@ export default async function DocumentationPage({ params }: { params: Promise<{ 
           slug: true,
           order: true,
           parentId: true,
-          // no content here
         },
       },
     },
@@ -63,14 +66,31 @@ export default async function DocumentationPage({ params }: { params: Promise<{ 
 
   if (!currentPage) return notFound()
 
+  // fetchComments
+  let myComments: Comment[] = []
+  if (session?.user.id) {
+    myComments = await prisma.comment.findMany({
+      where: {
+        userId: session?.user.id,
+        projectId: project.id
+      },
+    })
+  }
+
+  console.log(session?.user)
   return (
     <Suspense fallback={<DocumentationSkeleton />}>
-      <DocumentationViewer project={project as any} currentPage={currentPage as any} />
+      <DocumentationViewer
+        project={project as any}
+        currentPage={currentPage as any}
+        user={session?.user as User}
+        comments={myComments as Comment[]}
+      />
     </Suspense>
   )
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }>}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const slugArray = (await params).slug ?? []
   if (slugArray.length === 0) return { title: "Not Found" }
 
