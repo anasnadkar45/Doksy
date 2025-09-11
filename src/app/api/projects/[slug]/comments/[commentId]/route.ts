@@ -2,9 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/app/lib/db"
 import { CommentStatus } from "@/generated/prisma"
 
-export async function PATCH(request: NextRequest, { params }: { params: { slug: string; commentId: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ slug: string; commentId: string }> }) {
   try {
-    const { commentId } = params
+    const commentId = (await params).commentId
     const body = await request.json()
     const { status } = body
 
